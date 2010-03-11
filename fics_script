@@ -1,0 +1,1 @@
+./icsdrone -icsPort 23 -program "./slcp.exe" -sendGameEnd "seek 3 0 f" -craftyMode on -limitRematches 5 -longAlgMoves on 
