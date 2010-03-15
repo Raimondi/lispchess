@@ -365,7 +365,7 @@
 (def white-bishop (make-instance 'bishop :value  350 :glyph "B" :dirs bishop-rays))
 (def black-bishop (make-instance 'bishop :value -350 :glyph "b" :dirs bishop-rays))
 (defmethod evaluate + ( (piece bishop) square )
-  (aref centralize square))
+  (ash (aref centralize square) -1))
 
 
 (defclass queen( slider )())
@@ -448,8 +448,7 @@
 
 
 (defmethod evaluate + ( (pawn black-pawn) square )
-  (+ (if-0 (black-passed-at? square) (black-passed-score square))
-))
+  (+ (if-0 (black-passed-at? square) (black-passed-score square))))
 
 (defmethod evaluate + ( (pawn black-pawn) (square (eql e7)))
   (+ -30 (if-0 (not (empty? e6)) -30)))
@@ -461,8 +460,6 @@
 (defclass pawn-double (pawn-move) ())
 
 (defclass ep-capture( pawn-move ) ((lift :reader lift :initarg :lift)))
-
-;(defmethod extra( (move ep-capture) ) "ep")
 
 (defmethod play :after ((move ep-capture))
   (push-piece-at (lift move)))
@@ -535,12 +532,10 @@
     mb))
     
 (defun board-eval()
-  (+
-   (material-score)
-   (board-loop for piece = (board sq) sum
-	       (if (eq piece empty-square) 0
-		 (+ 
-		  (* (evaluate piece sq) (signum (value piece))))))))
+  (+ (material-score)
+     (board-loop for piece = (board sq) sum
+		 (if (eq piece empty-square) 0
+		   (+ (* (evaluate piece sq) (signum (value piece))))))))
   
 (defun debug-eval()
   (board-loop for piece = (board sq) do
@@ -602,8 +597,7 @@
     (when (zerop (aref traffic a1))
 	  (when (and (empty? d1) (empty? c1) (empty? b1))
 	    (unless (or (black-attacks? d1) (black-attacks? c1))
-	      (add-move 'castle e1 c1 :rfrom a1 :rto d1))))
-  ))
+	      (add-move 'castle e1 c1 :rfrom a1 :rto d1))))))
 
 (defmethod generate :after ( (piece black-king) (square (eql e8)))
   (when (and (zerop (aref traffic e8)) (not (white-attacks? e8)))
@@ -614,8 +608,7 @@
     (when (zerop (aref traffic a8))
 	  (when (and (empty? d8) (empty? c8) (empty? b8))
 	    (unless (or (white-attacks? d8) (white-attacks? c8))
-	      (add-move 'castle e8 c8 :rfrom a8 :rto d8))))
-  ))
+	      (add-move 'castle e8 c8 :rfrom a8 :rto d8))))))
 
 (defparameter pieces (list empty-square white-king black-king white-queen black-queen white-pawn black-pawn
 		     white-rook black-rook white-knight black-knight white-bishop black-bishop))
